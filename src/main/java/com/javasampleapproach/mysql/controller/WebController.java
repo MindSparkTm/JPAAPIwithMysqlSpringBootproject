@@ -50,7 +50,19 @@ public class WebController {
 		for(Customer cust: repository.findByLastName(lastName)){
 			result += "<div>" + cust.toString() + "</div>"; 
 		}
+	
+		return result + "</html>";
+	}
+	
+	
+	@RequestMapping("/findbyfirstname")
+	public String fetchDataByFirstName(@RequestParam("lastname") String firstName){
+		String result = "<html>";
 		
+		for(Customer cust: repository.findByFirstName(firstName)){
+			result += "<div>" + cust.toString() + "</div>"; 
+		}
+	
 		return result + "</html>";
 	}
 }
