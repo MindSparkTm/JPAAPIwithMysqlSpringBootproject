@@ -21,6 +21,7 @@ public class WebController {
 		repository.save(new Customer("Kim", "Smith"));
 		repository.save(new Customer("David", "Williams"));
 		repository.save(new Customer("Peter", "Davis"));
+		
 		return "Done";
 	}
 	
@@ -41,6 +42,12 @@ public class WebController {
 		String result = "";
 		result = repository.findOne(id).toString();
 		return result;
+	}
+	
+	@RequestMapping("/deletebyfirstname")
+	public String deleteById(@RequestParam("firstName") String firstName){
+		repository.deleteByFirstName(firstName);
+		return "done";
 	}
 	
 	@RequestMapping("/findbylastname")
