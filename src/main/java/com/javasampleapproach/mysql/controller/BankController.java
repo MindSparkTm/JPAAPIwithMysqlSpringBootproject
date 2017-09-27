@@ -1,5 +1,6 @@
 package com.javasampleapproach.mysql.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javasampleapproach.mysql.model.Balance;
+import com.javasampleapproach.mysql.model.MiniStatement;
 import com.javasampleapproach.mysql.model.Token;
 import com.javasampleapproach.mysql.pojoclasses.BalanceData;
+import com.javasampleapproach.mysql.pojoclasses.MiniStatementData;
 import com.javasampleapproach.mysql.pojoclasses.ValidUser;
 import com.javasampleapproach.mysql.repo.BalanceRepository;
+import com.javasampleapproach.mysql.repo.MiniStatementRepository;
 import com.javasampleapproach.mysql.repo.Tokenrepository;
 
 @RestController
@@ -25,6 +29,8 @@ public class BankController {
 	@Autowired
 	private BalanceRepository brep;
 
+	@Autowired
+	private MiniStatementRepository rep;
 	@RequestMapping("/validateuser")
 	public @ResponseBody ValidUser validateuser(@RequestParam("senderid") String senderid) {
 	  String isallowed ="";
@@ -93,4 +99,51 @@ public class BankController {
 	       
 			
 		}
+
+	@RequestMapping("/transactionsummary")
+public @ResponseBody MiniStatementData getsummary(@RequestParam("senderid")String senderid) {
+	
+		  MiniStatementData v = null;
+		  String isallowed ="";
+		  String accountnumber="";
+		  List<String>balance = new ArrayList<String>();
+		  List<String>transactionsummary = new ArrayList<String>();
+		  List<String>date = new ArrayList<String>();
+	       List<Token> L = reppo.findBytelegramid(senderid);
+	       System.out.println(L.size());
+	       for(Token s:L) {
+	    	   isallowed = s.getAllowed();
+	    	   accountnumber= s.getaccount_number();
+	    	   
+	    	   System.out.println(s.getAllowed());
+	       }
+	       
+	       if(isallowed.equals("yes")) {
+	    	   System.out.println(accountnumber);
+		       List<MiniStatement> bal = rep.findBytelegramid(accountnumber);
+		       System.out.println(bal);
+             for(MiniStatement b:bal) {
+            	 System.out.println(b.getBalance());
+            	 balance.add(b.getBalance().toString());
+            	 transactionsummary.add(b.getTransaction_summary().toString());
+            	 date.add(b.getDate().toString());
+          	 
+
+
+             }
+        	   v = new MiniStatementData(balance,transactionsummary,date);
+
+System.out.println(v);
+	       }
+	       else {
+	    	   
+	    	   balance.add("-1");
+	    	   transactionsummary.add("-1");
+	    	   date.add("-1");
+	    	   v = new MiniStatementData(balance,transactionsummary,date);
+	       }
+	    	
+	     
+	return v;
+}
 }
